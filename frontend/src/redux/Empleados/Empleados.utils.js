@@ -1,6 +1,8 @@
 import axios from 'axios';
 import token from '../../token';
 
+console.log("token al principio de utils: " + token);
+
 // Estas son todas funciones de apoyo que llaman a la api del servidor.
 
 export const altaEmpleadoApi = ( nombre, email, password, admin ) => {

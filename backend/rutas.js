@@ -15,10 +15,10 @@ const rutasProtegidas = express.Router();
 //////////////////////////////////////
 
 rutasProtegidas.use((req, res, next) => {
-    const token = req.headers['Autorization'];
+    const token = ''//req.headers['autorization'];
 
-    console.log("headers en rutas: " + JSON.stringify(req.headers))
-    console.log("token en rutas: " + token)
+    // console.log("headers en rutas: " + JSON.stringify(req.headers))
+    // console.log("token en rutas: " + token)
 
     if (token) {
         const semilla = process.env.SEMILLA_JWT;
@@ -27,8 +27,10 @@ rutasProtegidas.use((req, res, next) => {
 
         jwt.verify(token, semilla, (err, decoded) => {      
             if (err) {
+                console.log("error en verify: " + err)
                 return res.status(401).json({ mensaje: 'Token inválida' });    
             } else {
+                console.log("decoded en verify: " + JSON.stringify(decoded))
                 req.decoded = decoded;    
                 next();
             }

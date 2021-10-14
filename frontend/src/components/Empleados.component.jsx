@@ -19,10 +19,11 @@ const Empleados = ({
   //PARA FORZAR LA CARGA DE LOS EMPLEADOS AL INICIALIZAR
   useEffect(() => {
       const error = getEmpleados();
-      console.log(error);
+      console.log("Error en useEffect: " + JSON.stringify(error));
+      console.log("length: " + Object.keys(error).length);
       // Acá no hice una promesa como hice con login porque la redireccón es sólo en caso de error.
       // Además así es más simple.
-      if(error){ history.push('/noautorizado')};
+      if (Object.keys(error).length != 0){ history.push('/noautorizado')};
   }, [ getEmpleados ]);
 
   const handleEliminar = async (id) => {
