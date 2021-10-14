@@ -32,6 +32,7 @@ export const getEmpleados = () => async ( dispatch ) => {
         }).catch(( error ) => {
             console.log(error);
             dispatch( isFetchingCoplete() );
+            return error;
         });
 };
 

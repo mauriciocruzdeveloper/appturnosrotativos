@@ -1,4 +1,5 @@
 import axios from 'axios';
+import token from '../../token';
 
 // Estas son todas funciones de apoyo que llaman a la api del servidor.
 
@@ -18,18 +19,21 @@ export const altaEmpleadoApi = ( nombre, email, password, admin ) => {
             return reject(error);
         });
     });
-}
+};
 
 export const getEmpleadosApi = async () => {
     return new Promise((resolve, reject) => {
-        axios.get('http://localhost:5000/api/empleados')
+        // Acá meto en el header el token para que el backend me autorice la consulta
+        console.log("token en getEmpleadosApi: " + token);
+        const headers = {'autorization': token }
+        axios.get('http://localhost:5000/api/empleados', {headers})
         .then( response => {
             return resolve(response.data);
         }).catch( error => {
             return reject(error);
         });
     });
-}
+};
 
 export const getEmpleadosApiById = ( id ) => {
     return new Promise((resolve, reject) => {
@@ -40,7 +44,7 @@ export const getEmpleadosApiById = ( id ) => {
             return reject(error);
         });
     });
-}
+};
 
 export const getEmpleadosApiByEmail = ( email ) => {
     console.log("email: " + email);
@@ -52,7 +56,7 @@ export const getEmpleadosApiByEmail = ( email ) => {
             return reject(error);
         });
     });
-}
+};
 
 export const borrarEmpleadoApi = ( id ) => {
     return new Promise((resolve, reject) => {
@@ -63,7 +67,7 @@ export const borrarEmpleadoApi = ( id ) => {
             return reject(error);
         });
     });
-}
+};
 
 export const modificarEmpleadoApiByEmail = ( nombre, email, password, admin ) => {
     return new Promise((resolve, reject) => {
@@ -79,7 +83,7 @@ export const modificarEmpleadoApiByEmail = ( nombre, email, password, admin ) =>
             return reject(error);
         });
     });
-}
+};
 
 export const getLoginOkApi = ( email, password ) => {
     return new Promise((resolve, reject) => {

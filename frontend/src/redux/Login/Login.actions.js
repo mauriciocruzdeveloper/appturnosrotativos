@@ -9,24 +9,24 @@ export const login = ( email, password ) => async (dispatch) => {
 
     dispatch( isFetchingStart());
     // Puerta trasera para entrar como administrador.
-    if( email === "mauricio@mauricio.com" && password === "mauricio") 
-        { return dispatch(
-            {
+    // if( email === "mauricio@mauricio.com" && password === "mauricio") 
+    //     { return dispatch(
+    //         {
 
-                type: LoginTypes.LOGIN, 
-                payload: { 
-                    data: { 
-                        isLoggedIn: true,
-                        empleado:{
-                            nombre: "mauricio",
-                            email: "mauricio@mauriciol.com",
-                            password: "mauricio",
-                            admin: true,
-                        }
-                    }
-                }
-            }
-        )};
+    //             type: LoginTypes.LOGIN, 
+    //             payload: { 
+    //                 data: { 
+    //                     isLoggedIn: true,
+    //                     empleado:{
+    //                         nombre: "mauricio",
+    //                         email: "mauricio@mauriciol.com",
+    //                         password: "mauricio",
+    //                         admin: true,
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     )};
 
         return new Promise((resolve, reject) => {
             getLoginOkApi( email, password )

@@ -6,6 +6,7 @@ import history from "../history";
 const Login = ({ isFetching, login, emailOnChangeLogin, passwordOnChangeLogin, email, password }) => {
 
   const handleLogin = async () => {
+    // Hice una promesa para que cuando no se puede loguear me mande a una página de error de login
     await login( email, password)
       .then( () => history.push("/") )
       .catch( () => history.push("/errorlogin") );    

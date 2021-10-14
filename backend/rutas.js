@@ -15,21 +15,26 @@ const rutasProtegidas = express.Router();
 //////////////////////////////////////
 
 rutasProtegidas.use((req, res, next) => {
-    const token = req.headers['access-token'];
+    const token = req.headers['Autorization'];
+
+    console.log("headers en rutas: " + JSON.stringify(req.headers))
+    console.log("token en rutas: " + token)
+
     if (token) {
         const semilla = process.env.SEMILLA_JWT;
+
+        
+
         jwt.verify(token, semilla, (err, decoded) => {      
             if (err) {
-            return res.json({ mensaje: 'Token inválida' });    
+                return res.status(401).json({ mensaje: 'Token inválida' });    
             } else {
-            req.decoded = decoded;    
-            next();
+                req.decoded = decoded;    
+                next();
             }
         });
     } else {
-        res.send({ 
-            mensaje: 'Token no proveída.' 
-        });
+        res.status(401).json({ mensaje: 'Token no proveída.' });
     }
  });
 
@@ -61,7 +66,7 @@ router.post( "/empleados/login", async ( req, res ) => {
         );
         res.status(200).json({ message: "Password Válido" });
       } else {
-        res.status(400).json({ error: "Password Inválido" });
+        res.status(401).json({ error: "Password Inválido" });
       }
     } else {
       res.status(404).json({ error: "No se encontró el usuario" });
@@ -74,7 +79,7 @@ router.post( "/empleados/login", async ( req, res ) => {
 //////////////////////////////////
 
 // GET - Devuelve el listado de empleados
-router.get( "/empleados", async ( req, res ) => {
+router.get( "/empleados", rutasProtegidas, async ( req, res ) => {
     try {
         const empleados = await Empleado.find();
         res.send( empleados );
