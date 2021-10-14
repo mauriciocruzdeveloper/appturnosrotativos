@@ -28,8 +28,9 @@ export const login = ( email, password ) => async (dispatch) => {
         )};
 
         return new Promise((resolve, reject) => {
-            await getLoginOkApi( email, password )
+            getLoginOkApi( email, password )
                 .then(( empleado ) => {
+                    console.log("entra al then");
                     dispatch(
                         { 
                             type: LoginTypes.LOGIN, 
@@ -42,9 +43,10 @@ export const login = ( email, password ) => async (dispatch) => {
                             }
                         }
                     );
-                    response( empleado );
+                    resolve( empleado );
                 })
                 .catch(( error ) => {
+                    console.log("entra al then");
                     // dispatch( errorLogin() );
                     // history.push("/errorlogin");
                     console.log( error );
