@@ -10,6 +10,7 @@ import Error from "../components/Error.component";
 import Turno from "../components/Turno.components";
 import Resumen from "../components/Resumen.component";
 
+
 //Routes
 import EmpleadosRoutes from "./Empleados/Empleados.routes";
 import TiposJornadaRoutes from "./TiposJornada/TiposJornada.routes";
