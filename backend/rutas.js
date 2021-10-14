@@ -104,25 +104,19 @@ router.get( "/empleadosByEmail/:email", async ( req, res ) => {
 
 // POST - Verifica el email y devuelve true o false
 router.post( "/empleados/login", async ( req, res ) => {
-    
-    console.log("password en rutas: " + req.body.password);
-    console.log("email en rutas: " + req.body.email);
-
     const body = req.body;
     const user = await Empleado.findOne({ email: body.email });
     if (user) {
-      // check user password with hashed password stored in the database
-        console.log("password en body: " + body.password);
-        console.log("password en user: " + user.password);
+      // Compara el password que envié con el de la base de datos
       const validPassword = await bcrypt.compare(body.password, user.password);
       if (validPassword) {
         res.send(user);
-        res.status(200).json({ message: "Valid password" });
+        res.status(200).json({ message: "Password Válido" });
       } else {
-        res.status(400).json({ error: "Invalid Password" });
+        res.status(400).json({ error: "Password Inválido" });
       }
     } else {
-      res.status(404).json({ error: "User does not exist" });
+      res.status(404).json({ error: "No se encontró el usuario" });
     }
 });
 

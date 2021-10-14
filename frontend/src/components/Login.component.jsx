@@ -7,8 +7,8 @@ const Login = ({ isFetching, login, emailOnChangeLogin, passwordOnChangeLogin, e
 
   const handleLogin = async () => {
     await login( email, password)
-      .then( history.push("/") )
-      .catch( history.push("/errorlogin") );    
+      .then( () => history.push("/") )
+      .catch( () => history.push("/errorlogin") );    
   };
 
   return (

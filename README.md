@@ -29,6 +29,15 @@ Si no funciona bootstrap, instalar npm i @popperjs/core.
 La encriptación del password al dar de alta un empleado se hace del lado del servidor, como corresponde.
 Se usa "npm install bcrypt" para instalar el complemento en el backend.
 
+Uso JWT para autenticar al usuario cuando se conecta al backend para usar sus servicios.
+
+
+
+
+
+
+
+
 Para solucionar cualquier inconveniente o duda, escribir a mauricio11111@gmail.com
 
 

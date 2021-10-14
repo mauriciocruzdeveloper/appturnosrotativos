@@ -8,9 +8,9 @@ var cors = require('cors');
 // Uso dotenv para pasar parámetros de conexion.
 
 // Estos son los datos para la conección local que está comentada en el apartado "Conexion MongoDB con Mongoose"
-const host = process.env.SERVER_HOST_NAME;
-const puertoServidor = process.env.SERVER_PORT;
-const puertoMongoDB = process.env.MONGODB_PORT
+// const host = process.env.SERVER_HOST_NAME;
+// const puertoServidor = process.env.SERVER_PORT;
+// const puertoMongoDB = process.env.MONGODB_PORT
 
 // Estos son los datos para la conexión remota hacia MongoDB Atlas (servicio cloud)
 const usuarioServidor = process.env.SERVER_USER;

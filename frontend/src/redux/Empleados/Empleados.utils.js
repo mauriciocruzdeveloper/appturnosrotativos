@@ -90,6 +90,7 @@ export const getLoginOkApi = ( email, password ) => {
             email: email,
             password: password
         }).then(response => {
+            console.log("entra al then de getLoginOkApi en Empleados.utils");
             return resolve(response.data);
         }).catch(error => {
             console.log("Error en catch getLoginOkApi:" + error);

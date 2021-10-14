@@ -1,4 +1,5 @@
 import { LoginTypes } from "./Login.types";
+// Esta función está en Empleados en lugar de Login
 import { getLoginOkApi } from "../Empleados/Empleados.utils";
 
 export const isFetchingStart = () => {console.log("llega a isfetching"); return { type: LoginTypes.ISFETCHING_LOGIN_START }};
@@ -36,7 +37,6 @@ export const login = ( email, password ) => async (dispatch) => {
                             type: LoginTypes.LOGIN, 
                             payload: { 
                                 data: {
-                                    isFetching: false,
                                     isLoggedIn: true,
                                     empleado
                                 }
@@ -46,13 +46,13 @@ export const login = ( email, password ) => async (dispatch) => {
                     resolve( empleado );
                 })
                 .catch(( error ) => {
-                    console.log("entra al then");
+                    console.log("entra al catch");
                     // dispatch( errorLogin() );
                     // history.push("/errorlogin");
                     console.log( error );
                     reject( error );
-                });
-                //.finally( dispatch( isFetchingCoplete()) );
+                })
+                .finally( dispatch( isFetchingCoplete()) );
         });
 };
 
