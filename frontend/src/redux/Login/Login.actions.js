@@ -21,7 +21,7 @@ export const login = ( email, password ) => async (dispatch) => {
                             nombre: "mauricio",
                             email: "mauricio@mauriciol.com",
                             password: "mauricio",
-                            admin: true
+                            admin: true,
                         }
                     }
                 }
@@ -31,7 +31,7 @@ export const login = ( email, password ) => async (dispatch) => {
         return new Promise((resolve, reject) => {
             getLoginOkApi( email, password )
                 .then(( empleado ) => {
-                    console.log("entra al then");
+                    console.log("entra al then:" + JSON.stringify(empleado));
                     dispatch(
                         { 
                             type: LoginTypes.LOGIN, 

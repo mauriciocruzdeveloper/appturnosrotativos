@@ -7,7 +7,8 @@ const INITIAL_STATE = {
         nombre: '',
         email: '',
         password: '',
-        admin: false
+        admin: false,
+        token: ''
     },
 }
 
@@ -30,7 +31,8 @@ export default (state = INITIAL_STATE, action) => {
                     nombre: action.payload.data.empleado.nombre,
                     admin: action.payload.data.empleado.admin,
                     email: action.payload.data.empleado.email,
-                    password: action.payload.data.empleado.password
+                    password: action.payload.data.empleado.password,
+                    token: action.payload.data.empleado.token
                 }
             }
         case LoginTypes.LOGOUT:

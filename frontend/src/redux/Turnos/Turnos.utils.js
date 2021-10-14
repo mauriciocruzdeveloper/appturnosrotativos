@@ -1,8 +1,9 @@
 import axios from 'axios';
+import token from '../../token';
 
 // El parámetro es un objeto que representa un empleado
 export const altaTurnosApi = ( dia, mes, anio, empleado, horario, tipoJornada ) => {
-    console.log("en altaTurnos: " + dia, mes, anio, empleado, horario, tipoJornada );
+    console.log("en altaTurnos: " + dia, mes, anio, empleado, horario, tipoJornada, token );
     return new Promise((resolve, reject) => {
         axios.post('http://localhost:5000/api/turnos', {
             dia: dia,
@@ -10,7 +11,7 @@ export const altaTurnosApi = ( dia, mes, anio, empleado, horario, tipoJornada ) 
             anio: anio,
             empleado: empleado,
             horario: horario,
-            tipoJornada: tipoJornada
+            tipoJornada: tipoJornada,
         }).then(response => {
             console.log(response);
             return resolve(response.data);

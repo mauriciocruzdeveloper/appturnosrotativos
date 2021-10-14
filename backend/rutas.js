@@ -4,8 +4,69 @@ const express = require( "express" );
 const Empleado = require( "./modelos/Empleado" );
 const TipoJornada = require("./modelos/TipoJornada");
 const Turno = require("./modelos/Turno");
-const router = express.Router();
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const router = express.Router();
+const rutasProtegidas = express.Router(); 
+
+
+//////////////////////////////////////
+//////////   TOKEN Y LOGIN   /////////
+//////////////////////////////////////
+
+rutasProtegidas.use((req, res, next) => {
+    const token = req.headers['access-token'];
+    if (token) {
+        const semilla = process.env.SEMILLA_JWT;
+        jwt.verify(token, semilla, (err, decoded) => {      
+            if (err) {
+            return res.json({ mensaje: 'Token inválida' });    
+            } else {
+            req.decoded = decoded;    
+            next();
+            }
+        });
+    } else {
+        res.send({ 
+            mensaje: 'Token no proveída.' 
+        });
+    }
+ });
+
+
+ // POST - Verifica el email y la contraseña para el login
+router.post( "/empleados/login", async ( req, res ) => {
+    const body = req.body;
+    const user = await Empleado.findOne({ email: body.email });
+    const semilla = process.env.SEMILLA_JWT;
+
+    if (user) {
+      // Compara el password que envié con el de la base de datos
+      const validPassword = await bcrypt.compare(body.password, user.password);
+      if (validPassword) {
+        // Genero el token y lo mando con el usuario en la propiedad "token"
+        const payload = {
+            email: body.email,
+            nombre: user.nombre
+        }; // El payload es el email y el nombre de usuario
+        const token = jwt.sign(payload, semilla, {
+            expiresIn: 1440
+        });
+        res.send(
+            {
+            ...user._doc,
+            // Mando el token junto a los datos del usuario
+            token: token
+            }
+        );
+        res.status(200).json({ message: "Password Válido" });
+      } else {
+        res.status(400).json({ error: "Password Inválido" });
+      }
+    } else {
+      res.status(404).json({ error: "No se encontró el usuario" });
+    }
+});
 
 
 //////////////////////////////////
@@ -102,23 +163,6 @@ router.get( "/empleadosByEmail/:email", async ( req, res ) => {
     
 });
 
-// POST - Verifica el email y devuelve true o false
-router.post( "/empleados/login", async ( req, res ) => {
-    const body = req.body;
-    const user = await Empleado.findOne({ email: body.email });
-    if (user) {
-      // Compara el password que envié con el de la base de datos
-      const validPassword = await bcrypt.compare(body.password, user.password);
-      if (validPassword) {
-        res.send(user);
-        res.status(200).json({ message: "Password Válido" });
-      } else {
-        res.status(400).json({ error: "Password Inválido" });
-      }
-    } else {
-      res.status(404).json({ error: "No se encontró el usuario" });
-    }
-});
 
 //////////////////////////////////
 //////   TIPOS DE JORNADA   //////
