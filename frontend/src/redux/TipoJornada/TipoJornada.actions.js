@@ -6,19 +6,17 @@ import {
 } from "./TipoJornada.utils";
 
 
-//Estas funciones no están vinculadas directamente con el reducer, sino que dispachan otras que sí están vinculadas al reducer.
-
 // El dispatch es un parámetro que pasa a la función callback desde thunk. Es propio de redux thunk.
-export const agregarTipoJornada = ( tipo ) => ( dispatch ) => {
+export const agregarTipoJornada = ( tipo ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    altaTipoJornadaApi( tipo )
+    return await altaTipoJornadaApi( tipo )
         .catch(( error ) => console.log(error))
         .finally(dispatch( isFetchingCoplete() ));
 };
 
 export const getTiposJornada = () => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    await getTiposJornadaApi()
+    return await getTiposJornadaApi()
         .then(( data ) => {
             // Los datos vienen del backend com oun arreglo, pero los necesito como objetos,
             // para eso hago lo de abajo, transformo un array en un objeto.
@@ -30,9 +28,9 @@ export const getTiposJornada = () => async ( dispatch ) => {
         });
 };
 
-export const borrarTipoJornada = ( id ) => ( dispatch ) => {
+export const borrarTipoJornada = ( id ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    borrarTipoJornadaApi( id )
+    return await borrarTipoJornadaApi( id )
         .catch(( error ) => console.log(error))
         .finally(dispatch( isFetchingCoplete() ));
 };

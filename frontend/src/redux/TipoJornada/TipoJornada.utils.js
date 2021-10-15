@@ -1,12 +1,16 @@
 import axios from 'axios';
+import { token } from '../../token';
 
 // El parámetro es un objeto que representa un empleado
 export const altaTipoJornadaApi = ( tipo ) => {
-    console.log("en altaTipoJornada: " + tipo);
     return new Promise((resolve, reject) => {
-        axios.post('http://localhost:5000/api/tiposjornada', {
-            tipo: tipo
-        }).then(response => {
+        const headers = {'autorization': token()}
+        axios.post('http://localhost:5000/api/tiposjornada', 
+            {
+                tipo: tipo
+            },
+            { headers }
+        ).then(response => {
             console.log(response);
             return resolve(response.data);
         }).catch(error => {
@@ -17,7 +21,8 @@ export const altaTipoJornadaApi = ( tipo ) => {
 
 export const getTiposJornadaApi = () => {
     return new Promise((resolve, reject) => {
-        axios.get('http://localhost:5000/api/tiposjornada')
+        const headers = {'autorization': token()}
+        axios.get('http://localhost:5000/api/tiposjornada', { headers })
         .then( response => {
             console.log(response);
             return resolve(response.data);
@@ -29,7 +34,8 @@ export const getTiposJornadaApi = () => {
 
 export const getTiposJornadaApiByTipo = ( tipo ) => {
     return new Promise((resolve, reject) => {
-        axios.get(`http://localhost:5000/api/tiposjornadaByTipo/${ tipo }`)
+        const headers = {'autorization': token()}
+        axios.get(`http://localhost:5000/api/tiposjornadaByTipo/${ tipo }`, { headers })
         .then( response => {
             return resolve(response);
         }).catch( error => {
@@ -40,8 +46,8 @@ export const getTiposJornadaApiByTipo = ( tipo ) => {
 
 export const borrarTipoJornadaApi = ( id ) => {
     return new Promise((resolve, reject) => {
-        console.log(id);
-        axios.delete(`http://localhost:5000/api/tiposjornada/${id}`)
+        const headers = {'autorization': token()}
+        axios.delete(`http://localhost:5000/api/tiposjornada/${id}`, { headers })
         .then( response => {
             return resolve(response);
         }).catch( error => {

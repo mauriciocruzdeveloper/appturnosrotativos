@@ -13,7 +13,9 @@ const CargaTipoJornada = ({
     tipo }) => {
         
     const handleGuardar = async () => {
-        await agregarTipoJornada( tipo );
+        const response = await agregarTipoJornada( tipo );
+        if (response?.status == 401){ return history.push('/noautorizado')};
+        if (response?.status == 400){ return history.push('/ocurrioproblema')};
         history.goBack();
     };
 
@@ -22,7 +24,6 @@ const CargaTipoJornada = ({
     <div className="container bg-warning">
         <div className="row">
             <div className="col-md-12 order-md-1">
-
                 <div className="row">
                     <div className="mb-3">
                         <label>Tipo de Jornada</label>
@@ -35,7 +36,6 @@ const CargaTipoJornada = ({
                             onChange={ (e) => tipoOnChange( e.target.value ) } 
                         />
                     </div>
-                    
                 </div>
             </div>
         </div>

@@ -9,17 +9,9 @@ import {
 
 // Hay funciones que terminan en dispatch y otras que no. Todas las acciones están en los archivos actions, luego pasan las acciones al reducer.
 
-
-
-
 export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes, anio ) => async (dispatch) => {
-    
     let turnosDelMes = [];
 
-    console.log("entra al action");
-
-    console.log ( email, horario, tipoJornada, dia, mes, anio );
-    
     // Indico que estoy haciendo fetch
     dispatch( isFetchingStart() );
     // Busco los turnos del mes
@@ -27,9 +19,6 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
         .then(data => turnosDelMes = data)
         .catch((error) => {
             console.log(error);
-
-            console.log("entra al catch de getTurnosPorMesApi en verificaPosibilidadTurno");
-
             dispatch( isFetchingCoplete() 
         )});
 
@@ -168,7 +157,6 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
         dispatch( turnoPermitido( true ) );
     }
 
-
     /////////////////////////////
 
 
@@ -176,12 +164,9 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
 
     //FUNCIÓN PARA OBTENER EL NÚMERO DE SEMANA
     function weekAndDay(date) {
-
-    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
-
-    return prefixes[Math.floor(date.getDate() / 7)];
-
-}
+        var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+        return prefixes[Math.floor(date.getDate() / 7)];
+    }
 
     let horasSemana = 0; // Es un array donde el índice es el número de la semana, y ahí voy sumarizando las horas. Cada turno son 8hs.
     const nroSemana = weekAndDay(new Date( anio, mes, dia ));
@@ -191,16 +176,10 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
     turnosDelMesSinLibres = turnosDelMesSinLibres.filter(turno => (turno?.tipoJornada != "Cumpeaños")); // Filtro los que no son Cumpleaños
     turnosDelMesSinLibres.forEach(({ anio, mes, dia }) => {
         let nroSemanaEach = weekAndDay(new Date( anio, mes, dia ));
-
-        console.log("nro semana: " + nroSemanaEach, nroSemana);
-
         if(nroSemana == nroSemanaEach){
             horasSemana = 8 + horasSemana;
         }
     });
-
-    console.log("horas semanalaes: " + horasSemana);
-
     if( horasSemana >= 48 ) { return dispatch( turnoPermitido( false, "48hs semanales" ) ) };
    
     //////////////////////////////////////////
@@ -220,38 +199,40 @@ export const turnoPermitido = ( permitido, motivo ) => ({
 // El dispatch es un parámetro que pasa a la función callback desde thunk. Es propio de redux thunk.
 export const agregarTurnos = ( dia, mes, anio, empleado, horario, tipoJornada ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    await altaTurnosApi( dia, mes, anio, empleado, horario, tipoJornada )
+    return await altaTurnosApi( dia, mes, anio, empleado, horario, tipoJornada )
         .catch(( error ) => console.log(error))
         .finally(dispatch( isFetchingCoplete() ));
 };
 
-export const getTurnos = () => ( dispatch ) => {
+export const getTurnos = () => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    getTurnosApi()
-        .then(( data ) => {
-            dispatch( getTurnosComplete(data));
+    return await getTurnosApi()
+        .then(( response ) => {
+            dispatch( getTurnosComplete(response.data));
+            return response;
         }).catch(( error ) => {
-            console.log(error);
-            dispatch( isFetchingCoplete() );
+            dispatch( isFetchingCoplete());
+            return error.response;
         });
 };
 
 // Genero un objeto en forma de arbol para buscar fácilmente por fecha
-export const getTurnosPorMes = (anio, mes) => ( dispatch ) => {
+export const getTurnosPorMes = ( anio, mes ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    getTurnosPorMesApi(anio, mes)
-        .then(( data ) => {
-            dispatch( getTurnosComplete(data));
+    return await getTurnosPorMesApi(anio, mes)
+        .then(( response ) => {
+            dispatch( getTurnosComplete( response.data ));
+            return response;
         }).catch(( error ) => {
-            console.log(error);
             dispatch( isFetchingCoplete() );
+            return error.response;
         });
 };
 
-export const borrarTurnos = ( id ) => ( dispatch ) => {
+export const borrarTurnos = ( id ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    borrarTurnosApi( id )
-        .catch(( error ) => console.log(error))
+    return await borrarTurnosApi( id )
+        .catch(( error ) => error.response )
         .finally(dispatch( isFetchingCoplete() ));
 };
 
@@ -275,10 +256,6 @@ export const horarioOnChange = ( data ) => ({
 });
 
 export const cargaFormTurnos = ( emailUsuario, dia, mes, anio ) => {
-    console.log(emailUsuario);
-    console.log(dia);
-    console.log(mes);
-    console.log(anio);
     return(
         {
             type: TurnosTypes.CARGA_FORM_TURNOS,

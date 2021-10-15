@@ -32,6 +32,7 @@ const Routes = ({ isLoggedIn, admin }) => (
 
         <Route exact path="/noautorizado" render = { () => <Error mensaje={"Acceso no autorizado"} /> } />
         <Route exact path="/errorlogin" render = { () => <Error mensaje={"Login incorrecto"} /> } />
+        <Route exact path="/ocurrioproblema" render = { () => <Error mensaje={"Ocurrió un problema"} /> } />
 
         <Route exact path="/turnos" render = { () => {
             return !isLoggedIn ? <Redirect to="/login" /> : <Turno />

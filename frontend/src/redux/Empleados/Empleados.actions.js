@@ -13,34 +13,35 @@ export const agregarEmpleado = ( nombre, email, password, admin, modifica ) => a
     // "modifica" es un estado que lo utilizo para saber si al agregarEmpleado tengo que dar de alta o modificar,
     // según si se partió desde la selección de un empleado existente o de uno nuevo.
     if(modifica){
-        await modificarEmpleadoApiByEmail( nombre, email, password, admin )
-            .catch(( error ) => console.log(error))
+        return await modificarEmpleadoApiByEmail( nombre, email, password, admin )
+            // Envío el response del error porque de ahí saco el status y sé qué tipo de error es
+            .catch( error => error.response )
             .finally(dispatch( isFetchingCoplete()));
     }else{
         // La contraseña se encripta del lado del servidor por seguridad
-        await altaEmpleadoApi( nombre, email, password, admin )
-            .catch(( error ) => console.log(error))
+        return await altaEmpleadoApi( nombre, email, password, admin )
+            .catch( error => error.response )
             .finally(dispatch( isFetchingCoplete() ));
     };
 };
 
 export const getEmpleados = () => async ( dispatch ) => {
     dispatch( isFetchingStart() );
-    await getEmpleadosApi()
-        .then(( data ) => {
-            dispatch( getEmpleadosComplete(data));
+    return await getEmpleadosApi()
+        .then(( response ) => {
+            dispatch( getEmpleadosComplete(response.data));
+            return response;
         }).catch(( error ) => {
-            console.log(error);
             dispatch( isFetchingCoplete() );
-            return error;
+            return error.response;
         });
 };
 
 export const borrarEmpleado = ( id ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
 
-    await borrarEmpleadoApi(id)
-        .catch(( error ) => console.log(error))
+    return await borrarEmpleadoApi(id)
+        .catch( error => error.response )
         .finally(dispatch( isFetchingCoplete() ));
 };
 

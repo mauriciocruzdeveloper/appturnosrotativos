@@ -23,8 +23,6 @@ const CalendarioSinEstilo = ({ className, getTurnosPorMes, coleccionTurnos }) =>
         let nroDia = i;
         let turnosDia = coleccionTurnos.filter(turno => turno.dia == i);
 
-        console.log("turnosDia: " + turnosDia);
-
         arrayDias.push({nroDia, nroMes, nroAnio, diaSemana, turnosDia});
     };
                 

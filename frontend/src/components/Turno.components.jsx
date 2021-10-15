@@ -21,6 +21,7 @@ const Turno = ({
     mensajePermitido,
     verificaPosibilidadTurno }) => {
 
+    // Array con los horarios seleccionables para los turnos
     const horarios = ["Mañana","Tarde","Noche"];
 
     useEffect(async () => {
@@ -69,6 +70,11 @@ const Turno = ({
                     {hora}
                     </option>) }
             </select>
+            {
+                ( horario === "Mañana" ) ? <div>De 6hs a 14hs</div> : 
+                    ( horario === "Tarde" ) ? <div>De 14hs a 22hs</div> : 
+                        ( horario == "Noche" ) ? <div>De 22hs a 6hs</div> : null
+            }
             <br />
             <br />
 

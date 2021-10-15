@@ -26,7 +26,9 @@ const CargaEmpleados = ( {
     // y las variables de estado desde redux mediante mapStateToProps. Luego ingresan como props del componente.
         
     const handleGuardar = async () => {
-        await  agregarEmpleado( nombre, email, password, !!admin, modifica );
+        const response = await agregarEmpleado( nombre, email, password, !!admin, modifica );
+        if (response?.status == 400){ return history.push('/ocurrioproblema')};
+        if (response?.status == 401){ return history.push('/noautorizado')};
         history.goBack();
     };
 
@@ -46,6 +48,7 @@ const CargaEmpleados = ( {
                             placeholder="Ingrese su nombre y apellido"
                             value={ nombre }
                             onChange={ (e) => nombreOnChange( e.target.value ) } 
+                            required
                         />
                     </div>
                     
@@ -59,6 +62,7 @@ const CargaEmpleados = ( {
                             placeholder="Ejemplo: you@example.com"
                             value={ email }
                             onChange={ (e) => emailOnChange( e.target.value ) }
+                            required
                         />
                     </div>
 
@@ -71,6 +75,8 @@ const CargaEmpleados = ( {
                             placeholder="Ingrese un password"
                             value={ password }
                             onChange={ (e) => passwordOnChange( e.target.value ) }
+                            readOnly= { modifica? true : false }
+                            required
                         />
                     </div>
 

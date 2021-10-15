@@ -15,16 +15,20 @@ const TiposJornada = ({
     isFetching }) => {
 
   //PARA FORZAR LA CARGA DE LOS EMPLEADOS AL INICIALIZAR
-  useEffect(() => {
-    getTiposJornada();
+  useEffect(async () => {
+    const response = await getTiposJornada();
+    if (response?.status == 401){ return history.push('/noautorizado')};
+    if (response?.status == 400){ return history.push('/ocurrioproblema')};
   }, [getTiposJornada]);
 
-  const handleEliminar = ( id ) => {
-    borrarTipoJornada( id );
+  const handleEliminar = async ( id ) => {
+    const response = await borrarTipoJornada( id );
+    if (response?.status == 401){ return history.push('/noautorizado')};
+    if (response?.status == 400){ return history.push('/ocurrioproblema')};
     getTiposJornada();
   }
 
-  const handleAlta = () => {
+  const handleAlta = async () => {
     cargaFormTipoJornada();
     history.push("/tiposjornada/carga")
   }
@@ -34,34 +38,34 @@ const TiposJornada = ({
   return (
     // Si se está conectando a la base de datos, muestra cargando...
     isFetching ? <h3>cargando ....</h3> :
-    <body class="bg-warning">
+    <div className="bg-warning">
       <div>
-          <h3 class="display-4 text-center text-dark">JORNADA LABORAL</h3>    	                              
+          <h3 className="display-4 text-center text-dark">JORNADA LABORAL</h3>    	                              
       </div>		
 
       <ol class="list-group list-group-numbered">
 
           {Object.values( coleccionTiposJornada ).map(( { tipo, _id }, i ) => (
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">
+              <li className="list-group-item d-flex justify-content-between align-items-start">
+              <div className="ms-2 me-auto">
+                <div className="fw-bold">
                 { tipo }
                 </div>       
               </div>
-              <button onClick={() => handleEliminar( _id ) }  type="button" class="btn btn-outline-warning">BAJA</button>
+              <button onClick={() => handleEliminar( _id ) }  type="button" className="btn btn-outline-warning">BAJA</button>
             </li>
           ))}
-    </ol>
+      </ol>
 
-    <div class="d-grid gap-2 col-5 mx-auto">
-      <button onClick={ handleAlta } type="button" class="btn btn-dark me-md-2  mt-4">ALTA JORNADA</button>
-    </div>
+      <div class="d-grid gap-2 col-5 mx-auto">
+        <button onClick={ handleAlta } type="button" className="btn btn-dark me-md-2  mt-4">ALTA JORNADA</button>
+      </div>
 
-    <div class="d-grid gap-2 col-5 mx-auto">
-      <button  onClick={() => history.push("/")} type="button" class="btn btn-dark me-md-2  mt-4">NAVEGAR A PRINCIPAL</button>
-    </div>
+      <div class="d-grid gap-2 col-5 mx-auto">
+        <button  onClick={() => history.push("/")} type="button" className="btn btn-dark me-md-2  mt-4">PRINCIPAL</button>
+      </div>
     
-  </body>
+  </div>
   );
 };
 

@@ -14,17 +14,12 @@ const rutasProtegidas = express.Router();
 //////////   TOKEN Y LOGIN   /////////
 //////////////////////////////////////
 
+// rutasProtegidas es una función que se agrega a las llamadas al servidor y
+// verifica que el token sea el correcto, sino no deja pasar
 rutasProtegidas.use((req, res, next) => {
-    const token = ''//req.headers['autorization'];
-
-    // console.log("headers en rutas: " + JSON.stringify(req.headers))
-    // console.log("token en rutas: " + token)
-
+    const token = req.headers['autorization'];
     if (token) {
         const semilla = process.env.SEMILLA_JWT;
-
-        
-
         jwt.verify(token, semilla, (err, decoded) => {      
             if (err) {
                 console.log("error en verify: " + err)
@@ -93,23 +88,26 @@ router.get( "/empleados", rutasProtegidas, async ( req, res ) => {
 
 
 // POST - Permite dar de alta una persona
-router.post( "/empleados", async ( req, res ) => {
-
-    // La contraseña se encripta del lado del servidor por seguridad
-    const pass = bcrypt.hashSync(req.body.password, 10);
-
-    const empleado = new Empleado({
-        nombre: req.body.nombre,
-        email: req.body.email,
-        password: pass,
-        admin: req.body.admin
-    });
-    await empleado.save();
-    res.send( empleado );
+router.post( "/empleados", rutasProtegidas, async ( req, res ) => {
+    try {
+        // La contraseña se encripta del lado del servidor por seguridad
+        const pass = bcrypt.hashSync(req.body.password, 10);
+        const empleado = new Empleado({
+            nombre: req.body.nombre,
+            email: req.body.email,
+            password: pass,
+            admin: req.body.admin
+        });
+        await empleado.save();
+        res.send( empleado );
+    } catch {
+        res.status( 400 );
+        res.send({ error: "Hubo un problema al cargar" });
+    };
 });
 
 // GET - Permite traer un empleado en particular por id
-router.get( "/empleados/:id", async ( req, res ) => { 
+router.get( "/empleados/:id", rutasProtegidas, async ( req, res ) => { 
     try {
         const empleado = await Empleado.findOne({ _id: req.params.id });
         res.send( empleado );
@@ -121,7 +119,7 @@ router.get( "/empleados/:id", async ( req, res ) => {
 
 
 // PATCH - Permite actualizar un empleado por email
-router.patch( "/empleados/:email", async ( req, res ) => {
+router.patch( "/empleados/:email", rutasProtegidas, async ( req, res ) => {
     try {
         const empleado = await Empleado.find().byEmail(req.params.email );
         if ( req.body.nombre ) {
@@ -146,7 +144,7 @@ router.patch( "/empleados/:email", async ( req, res ) => {
 });
 
 // DELETE - Permite borrar un empleado por id
-router.delete( "/empleados/:id", async ( req, res ) => {
+router.delete( "/empleados/:id", rutasProtegidas, async ( req, res ) => {
     console.log( 'Delete -> ' + req.params.id );
     try {
         await Empleado.deleteOne({ _id: req.params.id });
@@ -159,7 +157,7 @@ router.delete( "/empleados/:id", async ( req, res ) => {
 });
 
 // Query helper - get empleado por email (EXACTO)
-router.get( "/empleadosByEmail/:email", async ( req, res ) => {
+router.get( "/empleadosByEmail/:email", rutasProtegidas, async ( req, res ) => {
     try {
         const empleado = await Empleado.find().byEmail( req.params.email );
         res.send( empleado );
@@ -176,7 +174,7 @@ router.get( "/empleadosByEmail/:email", async ( req, res ) => {
 //////////////////////////////////
 
 // Query helper - get tipo de jornada por tipo (EXACTO)
-router.get( "/tipojornadaByTipo/:tipo", async ( req, res ) => {
+router.get( "/tipojornadaByTipo/:tipo", rutasProtegidas, async ( req, res ) => {
     try {
         const tipojornada = await TipoJornada.find().byTipo( req.params.tipo );
         res.send( tipojornada );
@@ -188,7 +186,7 @@ router.get( "/tipojornadaByTipo/:tipo", async ( req, res ) => {
 });
 
 // GET - Devuelve el listado de tipos de jornada
-router.get( "/tiposjornada", async ( req, res ) => {
+router.get( "/tiposjornada", rutasProtegidas, async ( req, res ) => {
     try {
         const tipoJornada = await TipoJornada.find();
         res.send( tipoJornada );
@@ -199,17 +197,22 @@ router.get( "/tiposjornada", async ( req, res ) => {
 });
 
 // POST - Permite dar de alta una tipo de jornada
-router.post( "/tiposjornada", async ( req, res ) => {
-    const tipoJornada = new TipoJornada({
-        tipo: req.body.tipo
-    });
-    await tipoJornada.save();
-    res.send( tipoJornada );
+router.post( "/tiposjornada", rutasProtegidas, async ( req, res ) => {
+    try {
+        const tipoJornada = new TipoJornada({
+            tipo: req.body.tipo
+        });
+        await tipoJornada.save();
+        res.send( tipoJornada );
+    } catch {
+        res.status( 400 );
+        res.send({ error: "Hubo un problema al cargar" });
+    };
 });
 
 
 // DELETE - Permite borrar un tipo de jornada por id
-router.delete( "/tiposjornada/:id", async ( req, res ) => {
+router.delete( "/tiposjornada/:id", rutasProtegidas, async ( req, res ) => {
     console.log( 'Delete -> ' + req.params.id );
     try {
         await TipoJornada.deleteOne({ _id: req.params.id });
@@ -226,7 +229,7 @@ router.delete( "/tiposjornada/:id", async ( req, res ) => {
 //////////////////////////////////
 
 // GET - Devuelve el listado de tipos de jornada
-router.get( "/turnos", async ( req, res ) => {
+router.get( "/turnos", rutasProtegidas, async ( req, res ) => {
     try {
         const turnos = await Turno.find();
         res.send( turnos );
@@ -237,22 +240,29 @@ router.get( "/turnos", async ( req, res ) => {
 });
 
 // POST - Permite dar de alta una tipo de jornada
-router.post( "/turnos", async ( req, res ) => {
+router.post( "/turnos", rutasProtegidas, async ( req, res ) => {
+    try {
+        const turno = new Turno({
+            dia: req.body.dia,
+            mes: req.body.mes,
+            anio: req.body.anio,
+            empleado: req.body.empleado,
+            tipoJornada: req.body.tipoJornada,
+            horario: req.body.horario
+        });
+        await turno.save();
+        res.send( turno );
+    } catch {
+        res.status( 400 );
+        res.send({ error: "Hubo un problema al cargar" });
+    };
 
-    const turno = new Turno({
-        dia: req.body.dia,
-        mes: req.body.mes,
-        anio: req.body.anio,
-        empleado: req.body.empleado,
-        tipoJornada: req.body.tipoJornada,
-        horario: req.body.horario
-    });
-    await turno.save();
-    res.send( turno );
+
+
 });
 
 // DELETE - Permite borrar un tipo de jornada por id
-router.delete( "/turnos/:id", async ( req, res ) => {
+router.delete( "/turnos/:id", rutasProtegidas, async ( req, res ) => {
     console.log( 'Delete -> ' + req.params.id );
     try {
         await Turno.deleteOne({ _id: req.params.id });
@@ -265,9 +275,14 @@ router.delete( "/turnos/:id", async ( req, res ) => {
 });
 
 // Query helper - Turnos por año/mes
-router.get( "/turnosByMes/:anio/:mes", async ( req, res ) => {
-    const turnos = await Turno.find().byMes( req.params.anio, req.params.mes);
-    res.send(turnos);
+router.get( "/turnosByMes/:anio/:mes", rutasProtegidas, async ( req, res ) => {
+    try {
+        const turnos = await Turno.find().byMes( req.params.anio, req.params.mes);
+        res.send(turnos);
+    } catch {
+        res.status( 404 );
+        res.send({ error: "Turno no existe!" });  
+    };
 });
 
 // Exportable

@@ -17,24 +17,26 @@ const Empleados = ({
   isFetching }) => {
 
   //PARA FORZAR LA CARGA DE LOS EMPLEADOS AL INICIALIZAR
-  useEffect(() => {
-      const error = getEmpleados();
-      console.log("Error en useEffect: " + JSON.stringify(error));
-      console.log("length: " + Object.keys(error).length);
-      // Acá no hice una promesa como hice con login porque la redireccón es sólo en caso de error.
-      // Además así es más simple.
-      if (Object.keys(error).length != 0){ history.push('/noautorizado')};
+  useEffect( async () => {
+    const response = await getEmpleados();
+    // Acá no hice una promesa como hice con login porque la redireccón es sólo en caso de error.
+    // Además así es más simple. Si el status es 401 es NO AUTORIZADO.
+    if (response?.status == 401){ return history.push('/noautorizado')};
+    if (response?.status == 400){ return history.push('/ocurrioproblema')};
   }, [ getEmpleados ]);
 
   const handleEliminar = async (id) => {
-    await borrarEmpleado( id );
+    const response = await borrarEmpleado( id );
+    if (response?.status == 401){ return history.push('/noautorizado')};
+    if (response?.status == 400){ return history.push('/ocurrioproblema')};
     getEmpleados();
   }
 
-  const handleModificar = (email) => {
+  const handleModificar = async (email) => {
     const empleado = coleccionEmpleados.find(empleado => empleado.email == email);
-    console.log("email: " + empleado);
-    cargaFormModifica( empleado );
+    const response = await cargaFormModifica( empleado );
+    if (response?.status == 401){ return history.push('/noautorizado')};
+    if (response?.status == 400){ return history.push('/ocurrioproblema')};
     history.push("/empleados/carga");
   }
 
