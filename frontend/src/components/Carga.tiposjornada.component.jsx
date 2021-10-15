@@ -52,10 +52,10 @@ const CargaTipoJornada = ({
     </div>
 
     );
-  };
+};
 
-  const mapStateToProps = (state) => ({
-    tipo: state.tiposJornada.form.tipo,
-  });
-  
-  export default connect( mapStateToProps, { agregarTipoJornada, tipoOnChange } )( CargaTipoJornada );
+const mapStateToProps = (state) => ({
+tipo: state.tiposJornada.form.tipo,
+});
+
+export default connect( mapStateToProps, { agregarTipoJornada, tipoOnChange } )( CargaTipoJornada );

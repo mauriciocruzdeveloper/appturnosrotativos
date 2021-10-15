@@ -16,20 +16,19 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
     dispatch( isFetchingStart() );
     // Busco los turnos del mes
     await getTurnosPorMesApi( anio, mes )
-        .then(data => turnosDelMes = data)
+        .then(response => turnosDelMes = response.data)
         .catch((error) => {
             console.log(error);
             dispatch( isFetchingCoplete() 
         )});
 
-    console.log("turnosDelMes" + turnosDelMes);
-
 
     //No se puede turno extra con extra en día anterior.
-
+    
     let turnoDelEmpleado = turnosDelMes.filter( turno => (turno.empleado == email));
     turnoDelEmpleado = turnoDelEmpleado.filter( turno => (turno.dia == dia-1));
     turnoDelEmpleado = turnoDelEmpleado.filter( turno => (turno.tipoJornada == "Turno Extra"));
+    // Filtro los turnos del empleado del día anterior que hayan sido extras, si es más que 0 no puede hacer un extra hoy.
     if((turnoDelEmpleado.length > 0) && (tipoJornada == "Turno Extra")){ 
         return dispatch( turnoPermitido(false, "Ya hizo un Turno Extra el día de ayer"));
     } else {
@@ -39,25 +38,15 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
 
     //////////////////////////////////////////////////
 
-    //No más de 1 turno normal por día. Si es normal, sólo extra.
+    //No más de 1 turno por día. Si es normal, sólo extra.
 
     turnoDelEmpleado = turnosDelMes.filter( turno => (turno.empleado == email));
     turnoDelEmpleado = turnoDelEmpleado.filter( turno => (turno.dia == dia));
-
-    console.log("tipoJornada: " + tipoJornada);
-    console.log("tipoJornada: " + turnoDelEmpleado[0]?.tipoJornada);
-
-    console.log(turnoDelEmpleado.length)
-
+    // Filtro los turnos normales de éste día, y no pueden ser más que 0
     if(turnoDelEmpleado.length > 0){
-        console.log("tipoJornada: " + tipoJornada);
-        console.log("tipoJornada: " + turnoDelEmpleado[0].tipoJornada);
         if((tipoJornada == "Turno Extra") && (turnoDelEmpleado[0].tipoJornada == "Turno Normal")){
-            console.log("tipoJornada: " + tipoJornada);
-            console.log("tipoJornada: " + turnoDelEmpleado[0].tipoJornada);
             dispatch( turnoPermitido(true));
         } else {
-            console.log("ENTRA AL FASE");
             return dispatch( turnoPermitido(false, "Más de un turno"));
         };
     } else {
@@ -73,9 +62,7 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
     turnosDelMesSinLibres = turnosDelMesSinLibres.filter(turno => (turno?.tipoJornada != "Día Libre")); // Filtro los que no son Día Libre
     turnosDelMesSinLibres = turnosDelMesSinLibres.filter(turno => (turno?.tipoJornada != "Vacaciones")); // Filtro los que no son Vacaciones
     turnosDelMesSinLibres = turnosDelMesSinLibres.filter(turno => (turno?.tipoJornada != "Cumpeaños")); // Filtro los que no son Cumpleaños
-
-    console.log("turnosDelMes despues dia libre" + turnosDelMes);
-
+    // Filtro los turnos del día que no sean vacaciones, ni día libre, ni cumpleaños y me fijo que no haya 2 turnos
     let turnosDelDia = [];
     turnosDelDia = turnosDelMes.filter(turno => (turno?.dia == dia));
     let turnosDelHorario = [];
@@ -90,22 +77,13 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
     // 24hs sin trabajar por día libre.
     let turnoDiaAnterior = turnosDelMes.filter(turno => turno?.dia == (dia-1));
 
-    console.log("turnoDiaAnterior " + turnoDiaAnterior);
-
     turnoDiaAnterior = turnoDiaAnterior.filter(turno => turno?.empleado == email);
-
-    console.log("turnoDiaAnterior " + turnoDiaAnterior);
-
-    console.log("Horario: " + horario);
-    console.log("Horario anterior: " + turnoDiaAnterior[0]?.horario);
 
     switch (horario) {
         case "Mañana":
             console.log("Entra a mañana");
             if( turnoDiaAnterior[0]?.horario == "Tarde" || turnoDiaAnterior[0]?.horario == "Noche"){
-
                 if( turnoDiaAnterior[0]?.tipoJornada == "Día Libre" ){
-                    console.log("SALE POR 24 MAÑANA");
                     return dispatch( turnoPermitido( false, "24hs por día libre" ) );
                 }else {
                     dispatch( turnoPermitido( true ) );
@@ -115,7 +93,6 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
         case "Tarde":
             if( turnoDiaAnterior[0]?.horario == "Noche"){
                 if( turnoDiaAnterior[0]?.tipoJornada == "Día Libre" ){
-                    console.log("SALE POR 24 TARDE");
                     return dispatch( turnoPermitido( false, "24hs por día libre" ) );
                 } else {
                     dispatch( turnoPermitido( true ) );
@@ -124,7 +101,6 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
             break;
         case "Noche":
             if( turnoDiaAnterior[0]?.tipoJornada == "Día Libre" ){
-                console.log("SALE POR 24 NOCHE");
                 return dispatch( turnoPermitido( false, "24hs por día libre" ) );
             } else {
                 dispatch( turnoPermitido( true ) );
@@ -142,8 +118,6 @@ export const verificaPosibilidadTurno = ( email, horario, tipoJornada, dia, mes,
     turnoDelEmpleado = turnoDelEmpleado.filter(turno => turno?.tipoJornada != "Vacaciones");
     turnoDelEmpleado = turnoDelEmpleado.filter(turno => turno?.tipoJornada != "Cumpleaños");
     turnoDelEmpleado = turnoDelEmpleado.filter(turno => turno?.tipoJornada != "Turno Extra");
-
-    console.log("turno del empleado: " + turnoDelEmpleado);
 
     const diasDelMes = new Date(anio, mes, 0).getDate();
     const diasOcupadosEmpleado = turnoDelEmpleado.length;
@@ -196,11 +170,13 @@ export const turnoPermitido = ( permitido, motivo ) => ({
     }
 });
 
+// EN LAS FUNCIONES DE ABAJO RESTORNO UN RESPONSE. LUEGO CON EL STATUS DE RESPONSE ME DOY CUENTA SI HUBO UN ERROR O NO
+
 // El dispatch es un parámetro que pasa a la función callback desde thunk. Es propio de redux thunk.
 export const agregarTurnos = ( dia, mes, anio, empleado, horario, tipoJornada ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
     return await altaTurnosApi( dia, mes, anio, empleado, horario, tipoJornada )
-        .catch(( error ) => console.log(error))
+        .catch( error => error.response)
         .finally(dispatch( isFetchingCoplete() ));
 };
 
@@ -216,7 +192,7 @@ export const getTurnos = () => async ( dispatch ) => {
         });
 };
 
-// Genero un objeto en forma de arbol para buscar fácilmente por fecha
+// Busco los turnos por mes y año
 export const getTurnosPorMes = ( anio, mes ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
     return await getTurnosPorMesApi(anio, mes)
@@ -229,6 +205,7 @@ export const getTurnosPorMes = ( anio, mes ) => async ( dispatch ) => {
         });
 };
 
+// Borro un turno
 export const borrarTurnos = ( id ) => async ( dispatch ) => {
     dispatch( isFetchingStart() );
     return await borrarTurnosApi( id )

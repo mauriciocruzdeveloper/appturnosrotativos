@@ -14,18 +14,17 @@ const DiaCalendarioSinEstilo = ({
     diaSemana, 
     emailUsuario, 
     cargaFormTurnos,
-    turnosDia }) => {
+    turnosDia,
+    coleccionEmpleados }) => {
 
     // Los días y meses están representados con números en las variables, por eso creé estos arrays, para que me devuelvan el nombre según el número.
     const nombresDias = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-    const nombreMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    const nombreMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-    const handleAlta = () => {
+    const handleAlta = async () => {
         cargaFormTurnos( emailUsuario, nroDia, nroMes, nroAnio );
         history.push("/turnos");
     }
-
-    console.log("turnosDia: " + turnosDia);
 
     return(
         <div onClick={ handleAlta }  className= { className }>
@@ -35,19 +34,20 @@ const DiaCalendarioSinEstilo = ({
             <div>
                 <CabeceraManiana>Mañana</CabeceraManiana>
                 { turnosDia.filter(turno => turno.horario == "Mañana").map( 
-                    turnoManiana => <div>{turnoManiana.empleado} - {turnoManiana.tipoJornada}</div>
+                    // Para cada turno hago un div con el nombre del empleado y el horario del turno
+                    turnoManiana => <div>{ coleccionEmpleados.find(e => e.email == turnoManiana.empleado).nombre } - {turnoManiana.tipoJornada}</div>
                 ) } 
             </div>
             <div>
                 <CabeceraTarde>Tarde</CabeceraTarde>
                 { turnosDia.filter(turno => turno.horario == "Tarde").map( 
-                    turnoManiana => <div>{turnoManiana.empleado} - {turnoManiana.tipoJornada}</div>
+                    turnoTarde => <div>{coleccionEmpleados.find(e => e.email == turnoTarde.empleado).nombre} - {turnoTarde.tipoJornada}</div>
                 ) } 
             </div>
             <div>
                 <CabeceraNoche>Noche</CabeceraNoche>
                 { turnosDia.filter(turno => turno.horario == "Noche").map( 
-                    turnoManiana => <div>{turnoManiana.empleado} - {turnoManiana.tipoJornada}</div>
+                    turnoNoche => <div>{coleccionEmpleados.find(e => e.email == turnoNoche.empleado).nombre} - {turnoNoche.tipoJornada}</div>
                 ) } 
             </div>
         </div>
@@ -105,7 +105,8 @@ const DiaCalendario = styled(DiaCalendarioSinEstilo)`
 `;
 
 const mapStateToProps = (state) => ({
-    emailUsuario: state.login.usuario.email
+    emailUsuario: state.login.usuario.email,
+    coleccionEmpleados: state.empleados.coleccionEmpleados
   });
 
 export default connect( mapStateToProps, { cargaFormTurnos, getTiposJornada } )( DiaCalendario );
